@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axe Adventures - Leaderboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            height: 40px;
+            width: auto;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0;
+        }
+
+        .header-logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(66, 153, 225, 0.1);
+            border-color: #4299e1;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 80px 2rem 2rem;
+        }
+
+        .leaderboard {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .leaderboard-header {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .leaderboard-header h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .leaderboard-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .leaderboard-table thead {
+            background: #f7fafc;
+        }
+
+        .leaderboard-table th {
+            padding: 1.5rem 2rem;
+            text-align: left;
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+
+        .leaderboard-table th:first-child {
+            text-align: center;
+            width: 80px;
+        }
+
+        .leaderboard-table th:last-child {
+            text-align: right;
+        }
+
+        .leaderboard-table tbody tr {
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s ease;
+        }
+
+        .leaderboard-table tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .leaderboard-table tbody tr:nth-child(odd) {
+            background: #fafafa;
+        }
+
+        .leaderboard-table tbody tr:nth-child(odd):hover {
+            background: #f0f4f8;
+        }
+
+        .leaderboard-table td {
+            padding: 1.5rem 2rem;
+            font-size: 1rem;
+        }
+
+        .rank {
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #4a5568;
+        }
+
+        .rank.gold { color: #d69e2e; }
+        .rank.silver { color: #718096; }
+        .rank.bronze { color: #c05621; }
+
+        .player-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .score {
+            text-align: right;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #2b6cb0;
+        }
+
+        .medal {
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 100px 1rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-logo {
+                height: 30px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .header-nav {
+                gap: 1rem;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .leaderboard-table th,
+            .leaderboard-table td {
+                padding: 1rem;
+            }
+
+            .leaderboard-table th:first-child,
+            .leaderboard-table td:first-child {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="header-content">
+            <div class="header-logo-title">
+                <img src="axeventures.png" alt="Axe Adventures Logo" class="header-logo">
+                <h1>Axe Adventures</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="leaderboard.html" class="nav-link active">🏆 Leaderboard</a>
+                <a href="player-stats.html" class="nav-link">📊 My Stats</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="leaderboard">
+            <div class="leaderboard-header">
+                <h2>🏆 Hall of Fame</h2>
+                <p>Top axe throwers from around the world</p>
+            </div>
+            
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="rank gold">1</td>
+                        <td class="player-name">Thor Ironbeard <span class="medal">🥇</span></td>
+                        <td class="score">95,420</td>
+                    </tr>
+                    <tr>
+                        <td class="rank silver">2</td>
+                        <td class="player-name">Freya Stormaxe <span class="medal">🥈</span></td>
+                        <td class="score">92,815</td>
+                    </tr>
+                    <tr>
+                        <td class="rank bronze">3</td>
+                        <td class="player-name">Ragnar Splitwood <span class="medal">🥉</span></td>
+                        <td class="score">89,960</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">4</td>
+                        <td class="player-name">Astrid Bladesong</td>
+                        <td class="score">87,340</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">5</td>
+                        <td class="player-name">Erik Windcutter</td>
+                        <td class="score">84,720</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">6</td>
+                        <td class="player-name">Sigrid Frostbite</td>
+                        <td class="score">82,150</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">7</td>
+                        <td class="player-name">Olaf Thunderstrike</td>
+                        <td class="score">79,890</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">8</td>
+                        <td class="player-name">Ingrid Sharpedge</td>
+                        <td class="score">77,620</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">9</td>
+                        <td class="player-name">Bjorn Treefeller</td>
+                        <td class="score">75,380</td>
+                    </tr>
+                    <tr>
+                        <td class="rank">10</td>
+                        <td class="player-name">Helga Ironwill</td>
+                        <td class="score">73,210</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let lastScrollY = window.scrollY;
+        const header = document.getElementById('header');
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            
+            lastScrollY = currentScrollY;
+        });
+    </script>
+</body>
+</html>

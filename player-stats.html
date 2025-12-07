@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axe Adventures - Player Stats</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            height: 40px;
+            width: auto;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 0;
+        }
+
+        .header-logo-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: #4a5568;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-link:hover {
+            background: rgba(66, 153, 225, 0.1);
+            border-color: #4299e1;
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            background: #4299e1;
+            color: white;
+            border-color: #4299e1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 80px 2rem 2rem;
+        }
+
+        .player-info {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .player-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background-image: url('pfp.png');
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border: 4px solid #4299e1;
+        }
+
+        .player-name {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .player-rank {
+            font-size: 1.2rem;
+            color: #718096;
+            margin-bottom: 1rem;
+        }
+
+        .current-rating {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #4299e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .rating-label {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .stat-change {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: #38a169;
+        }
+
+        .stat-change.negative {
+            color: #e53e3e;
+        }
+
+
+        .achievements {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .achievements-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .achievement {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .achievement.unlocked {
+            border-left-color: #38a169;
+            background: #f0fff4;
+        }
+
+        .achievement-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .achievement-text {
+            flex: 1;
+        }
+
+        .achievement-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .detailed-stats {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .detailed-stats-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .detailed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .detailed-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+
+        .detailed-stat-label {
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .detailed-stat-value {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 100px 1rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-logo {
+                height: 30px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .header-nav {
+                gap: 1rem;
+            }
+
+            .nav-link {
+                font-size: 0.9rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .player-name {
+                font-size: 2rem;
+            }
+
+            .current-rating {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="header-content">
+            <div class="header-logo-title">
+                <img src="axeventures.png" alt="Axe Adventures Logo" class="header-logo">
+                <h1>Axe Adventures</h1>
+            </div>
+            <nav class="header-nav">
+                <a href="leaderboard.html" class="nav-link">🏆 Leaderboard</a>
+                <a href="player-stats.html" class="nav-link active">📊 My Stats</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Player Info -->
+        <div class="player-info">
+            <div class="player-avatar"></div>
+            <div class="player-name">Erik Windcutter</div>
+            <div class="player-rank">Rank #5 Global • Master Thrower</div>
+            <div class="current-rating">2,847</div>
+            <div class="rating-label">Current Rating</div>
+        </div>
+
+        <!-- Main Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon">🎯</span>
+                <div class="stat-value">1,247</div>
+                <div class="stat-label">Total Bullseyes</div>
+                <div class="stat-change positive">+23 this week</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">🔥</span>
+                <div class="stat-value">18</div>
+                <div class="stat-label">Current Win Streak</div>
+                <div class="stat-change positive">Personal best!</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">📅</span>
+                <div class="stat-value">42</div>
+                <div class="stat-label">Monthly Visits</div>
+                <div class="stat-change positive">+8 from last month</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">⏱️</span>
+                <div class="stat-value">156.2</div>
+                <div class="stat-label">Hours Played</div>
+                <div class="stat-change positive">+12.5 this month</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">💯</span>
+                <div class="stat-value">87.3%</div>
+                <div class="stat-label">Accuracy Rate</div>
+                <div class="stat-change positive">+2.1% improvement</div>
+            </div>
+
+            <div class="stat-card">
+                <span class="stat-icon">👥</span>
+                <div class="stat-value">234</div>
+                <div class="stat-label">Games Won</div>
+                <div class="stat-change positive">68% win rate</div>
+            </div>
+        </div>
+
+
+        <!-- Achievements -->
+        <div class="achievements">
+            <div class="achievements-title">🏆 Achievements</div>
+            <div class="achievement-grid">
+                <div class="achievement unlocked">
+                    <span class="achievement-icon">🎯</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Bullseye Master</div>
+                        <div class="achievement-desc">Hit 1000 bullseyes</div>
+                    </div>
+                </div>
+                <div class="achievement unlocked">
+                    <span class="achievement-icon">🔥</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Hot Streak</div>
+                        <div class="achievement-desc">Win 10 games in a row</div>
+                    </div>
+                </div>
+                <div class="achievement unlocked">
+                    <span class="achievement-icon">⚡</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Speed Demon</div>
+                        <div class="achievement-desc">Complete a round in under 30 seconds</div>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">👑</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Champion</div>
+                        <div class="achievement-desc">Reach #1 on leaderboard</div>
+                    </div>
+                </div>
+                <div class="achievement unlocked">
+                    <span class="achievement-icon">💪</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Dedicated</div>
+                        <div class="achievement-desc">Play 100 hours</div>
+                    </div>
+                </div>
+                <div class="achievement">
+                    <span class="achievement-icon">💎</span>
+                    <div class="achievement-text">
+                        <div class="achievement-name">Perfect Game</div>
+                        <div class="achievement-desc">Score 100% accuracy in a match</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Stats -->
+        <div class="detailed-stats">
+            <div class="detailed-stats-title">📊 Detailed Statistics</div>
+            <div class="detailed-grid">
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Total Throws</span>
+                    <span class="detailed-stat-value">3,429</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Average Score</span>
+                    <span class="detailed-stat-value">847.2</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Best Single Game</span>
+                    <span class="detailed-stat-value">1,250</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Longest Win Streak</span>
+                    <span class="detailed-stat-value">23 games</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Total Distance</span>
+                    <span class="detailed-stat-value">2.8 miles</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Favorite Axe</span>
+                    <span class="detailed-stat-value">Thunder Strike</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Double Bullseyes</span>
+                    <span class="detailed-stat-value">89</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Perfect Rounds</span>
+                    <span class="detailed-stat-value">12</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Comeback Victories</span>
+                    <span class="detailed-stat-value">31</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Tournament Wins</span>
+                    <span class="detailed-stat-value">7</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Daily Login Streak</span>
+                    <span class="detailed-stat-value">14 days</span>
+                </div>
+                <div class="detailed-stat">
+                    <span class="detailed-stat-label">Friends Challenged</span>
+                    <span class="detailed-stat-value">18</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Header scroll behavior
+        let lastScrollY = window.scrollY;
+        const header = document.getElementById('header');
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            
+            lastScrollY = currentScrollY;
+        });
+
+    </script>
+</body>
+</html>
