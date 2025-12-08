@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Axe Adventures 45-Day Marketing Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --fg: #334155;
+      --card-bg: #ffffff;
+      --accent: #2563eb;
+      --border-subtle: #e2e8f0;
+      --social: #2563eb;
+      --pr: #7c3aed;
+      --major: #ea580c;
+      --email: #059669;
+      --event: #dc2626;
+      --muted: #64748b;
+      --radius-lg: 16px;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 2vw + 1rem, 2.1rem);
+      margin: 0;
+      letter-spacing: 0.03em;
+    }
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 520px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: white;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+      gap: 20px;
+      align-items: flex-start;
+    }
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .calendar {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 16px 16px 10px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .calendar-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+    .calendar-range {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .legend-inline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+    .legend-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #f8fafc;
+      font-size: 0.75rem;
+      border: 1px solid var(--border-subtle);
+      color: var(--muted);
+    }
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--muted);
+    }
+    .legend-color.social { background: var(--social); }
+    .legend-color.pr { background: var(--pr); }
+    .legend-color.major { background: var(--major); }
+    .legend-color.email { background: var(--email); }
+    .legend-color.event { background: var(--event); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    @media (max-width: 720px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 520px) {
+      .grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .day-card {
+      position: relative;
+      padding: 9px 10px 10px;
+      border-radius: 12px;
+      background: white;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 110px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      z-index: 1;
+    }
+    .day-number {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .day-date {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .day-phase {
+      font-size: 0.78rem;
+      color: var(--muted);
+      z-index: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .day-type {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      z-index: 1;
+      color: var(--muted);
+    }
+    .day-activity {
+      font-size: 0.78rem;
+      line-height: 1.25;
+      z-index: 1;
+      margin-top: 2px;
+    }
+    .day-kpi {
+      font-size: 0.72rem;
+      margin-top: auto;
+      padding-top: 4px;
+      border-top: 1px dashed var(--border-subtle);
+      color: var(--muted);
+      z-index: 1;
+    }
+
+    .type-social {
+      border-color: var(--social);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+    }
+    .type-pr {
+      border-color: var(--pr);
+      box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.2);
+    }
+    .type-major {
+      border-color: var(--major);
+      box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.2);
+    }
+    .type-email {
+      border-color: var(--email);
+      box-shadow: 0 0 0 1px rgba(5, 150, 105, 0.2);
+    }
+    .type-event {
+      border-color: var(--event);
+      box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2);
+    }
+
+    .sidebar {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      font-size: 0.85rem;
+    }
+    .sidebar h2 {
+      font-size: 0.98rem;
+      margin: 0 0 4px;
+    }
+    .sidebar p {
+      margin: 0 0 10px;
+      color: var(--muted);
+    }
+    .sidebar-section {
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .sidebar-list {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+      display: grid;
+      gap: 6px;
+    }
+    .sidebar-list li {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .sidebar-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      margin-top: 4px;
+      flex-shrink: 0;
+    }
+    .sidebar-dot.social { background: var(--social); }
+    .sidebar-dot.pr { background: var(--pr); }
+    .sidebar-dot.major { background: var(--major); }
+    .sidebar-dot.email { background: var(--email); }
+    .sidebar-dot.event { background: var(--event); }
+    .sidebar-label {
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+    .sidebar-desc {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <div class="badge"><span class="badge-dot"></span> 45-Day Retention Campaign</div>
+        <h1>Axe Adventures Marketing Calendar</h1>
+        <p class="subtitle">
+          Scroll the calendar to see every day of the campaign. Each card shows the phase,
+          focus, and KPI for that day, with colors indicating the main activity type.
+        </p>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="calendar" aria-label="45-day marketing calendar">
+        <div class="calendar-header">
+          <div>
+            <div class="calendar-title">Campaign Timeline</div>
+            <div class="calendar-range">Day 1 – Day 45</div>
+          </div>
+          <div class="legend-inline" aria-label="Activity type key">
+            <div class="legend-pill"><span class="legend-color social"></span>Social Media</div>
+            <div class="legend-pill"><span class="legend-color pr"></span>PR / Media</div>
+            <div class="legend-pill"><span class="legend-color email"></span>Email</div>
+            <div class="legend-pill"><span class="legend-color event"></span>Event Days</div>
+            <div class="legend-pill"><span class="legend-color major"></span>Major Events</div>
+          </div>
+        </div>
+
+        <div class="grid">
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 1</span>
+          <span class="day-date">Nov 24, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Drop Virtual Tour Episode 1 (venue, safety) on Insta and TikTok, plus an Instagram &quot;Stress to Success&quot; meme. Embed tour on website.</div>
+        <div class="day-kpi"><strong>KPI:</strong> 2,000 views on Episode 1</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 2</span>
+          <span class="day-date">Nov 25, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Put up fliers &amp; posters with QR codes around campus, corporate offices, and nearby cafes linking to the tour.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 3</span>
+          <span class="day-date">Nov 26, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Continue using fliers and posters</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 4</span>
+          <span class="day-date">Nov 27, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Create holiday themed tour clips</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 5</span>
+          <span class="day-date">Nov 28, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post BTS scenes for the virtual tour for comedic effect.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 6</span>
+          <span class="day-date">Nov 29, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send out an email to list subscribers with a &quot;tour premiere&quot; invite and virtual sneak peek.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 7</span>
+          <span class="day-date">Nov 30, 2024</span>
+        </div>
+        <div class="day-phase">Phase 1: Launch &amp; Virtual Tour</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Create an optional &quot;invite a friend&quot; link in the email to get people to share the tour with others.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 8</span>
+          <span class="day-date">Dec 01, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Drop Virtual Tour Episode 2 (coaching, techniques).</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 9</span>
+          <span class="day-date">Dec 02, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post coach &quot;tip of the week&quot; reel using footage from the virtual tour.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 10</span>
+          <span class="day-date">Dec 03, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send &quot;One More Throw&quot; promo email to first-time guests from past 3 months with a discount on second visit.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 11</span>
+          <span class="day-date">Dec 04, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Set up a 2-part email reminder flow for those who didn&apos;t open or click the first email.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 12</span>
+          <span class="day-date">Dec 05, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Partner with a local cafe to hand out &quot;One More Throw&quot; co-branded cards to customers.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 13</span>
+          <span class="day-date">Dec 06, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Approach campus clubs about &quot;axe throwing night&quot; events.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 14</span>
+          <span class="day-date">Dec 07, 2024</span>
+        </div>
+        <div class="day-phase">Phase 2: Retention &amp; One-More-Throw Offer</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post guest testimonial carousel or reel highlighting someone who came back for a second session and improved their throw.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 15</span>
+          <span class="day-date">Dec 08, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Drop Virtual Tour Episode 3 (community &amp; league nights).</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 16</span>
+          <span class="day-date">Dec 09, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post a &quot;Meet the League&quot; reel featuring 2-3 regulars sharing why they keep coming back.</div>
+      </div>
+      <div class="day-card type-major">
+        <div class="day-header">
+          <span class="day-number">Day 17</span>
+          <span class="day-date">Dec 10, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Major Events/Deadlines</div>
+        <div class="day-activity">Announce the upcoming league start date and sign-up link.</div>
+        <div class="day-kpi"><strong>KPI:</strong> 10 league sign-ups by end of Phase 3</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 18</span>
+          <span class="day-date">Dec 11, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send email to past guests describing &quot;League Night&quot; as the &quot;regulars-only&quot; experience w/ perks and prizes.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 19</span>
+          <span class="day-date">Dec 12, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Add &quot;bring a buddy&quot; league offer for current guests and ambassadors.</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 20</span>
+          <span class="day-date">Dec 13, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Host an in-house mini tournament night for current regulars and record highlights.</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 21</span>
+          <span class="day-date">Dec 14, 2024</span>
+        </div>
+        <div class="day-phase">Phase 3: Community &amp; League Awareness</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Capture guest reactions and short &quot;winner&quot; interviews at the mini tournament.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 22</span>
+          <span class="day-date">Dec 15, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Drop Virtual Tour Episode 4 (parties, group events, &amp; corporate team building).</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 23</span>
+          <span class="day-date">Dec 16, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Create a &quot;Top 5 Axe Throwing Party Moments&quot; reel from past group sessions.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 24</span>
+          <span class="day-date">Dec 17, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send email to HR managers and local businesses promoting Axe Adventures for team-building.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 25</span>
+          <span class="day-date">Dec 18, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Send a press release or pitch to a local business journal about &quot;axe-throwing as stress relief&quot; for work teams.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 26</span>
+          <span class="day-date">Dec 19, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Reach out to school clubs (ASB, sports teams, clubs) with group discount offers and fundraiser tie-ins.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 27</span>
+          <span class="day-date">Dec 20, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Share &quot;Holiday Axe Night&quot; content with a focus on friend groups and families having fun.</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 28</span>
+          <span class="day-date">Dec 21, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Host &quot;Ugly Sweater Axe Night&quot; with small prizes for best outfit and highest score.</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 29</span>
+          <span class="day-date">Dec 22, 2024</span>
+        </div>
+        <div class="day-phase">Phase 4: Holiday Push &amp; Group Events</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Capture lots of photos and short clips at Ugly Sweater Axe Night and gather guest handles for tagging.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 30</span>
+          <span class="day-date">Dec 23, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post a &quot;League Countdown&quot; graphic: &quot;League Night starts in 2 weeks!&quot;</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 31</span>
+          <span class="day-date">Dec 24, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Share a &quot;Who&apos;s in your League Squad?&quot; poll on Stories.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 32</span>
+          <span class="day-date">Dec 25, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send &quot;League Pre-Register&quot; email to everyone who has visited twice or more.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 33</span>
+          <span class="day-date">Dec 26, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send &quot;last chance to pre-register&quot; email with early bird perks.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 34</span>
+          <span class="day-date">Dec 27, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Invite a local influencer or campus figure to try a league practice night and share the experience.</div>
+      </div>
+      <div class="day-card type-pr">
+        <div class="day-header">
+          <span class="day-number">Day 35</span>
+          <span class="day-date">Dec 28, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">PR/Media/Outreach</div>
+        <div class="day-activity">Coordinate with student orgs or local rec centers to promote league signups.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 36</span>
+          <span class="day-date">Dec 29, 2024</span>
+        </div>
+        <div class="day-phase">Phase 5: Countdown to League Signups</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Post a reel of &quot;League Glow-Up&quot; stories—people who improved over time in league.</div>
+      </div>
+      <div class="day-card type-major">
+        <div class="day-header">
+          <span class="day-number">Day 37</span>
+          <span class="day-date">Dec 30, 2024</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Major Events/Deadlines</div>
+        <div class="day-activity">Officially open league signups for the new season.</div>
+        <div class="day-kpi"><strong>KPI:</strong> 46 league signups by end of campaign</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 38</span>
+          <span class="day-date">Dec 31, 2024</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send &quot;League Launch&quot; announcement email, featuring schedule, pricing, and perks.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 39</span>
+          <span class="day-date">Jan 01, 2025</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send &quot;New Year, New Bullseyes&quot; email encouraging people to make axe throwing their new hobby.</div>
+      </div>
+      <div class="day-card type-email">
+        <div class="day-header">
+          <span class="day-number">Day 40</span>
+          <span class="day-date">Jan 02, 2025</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Email Campaigns</div>
+        <div class="day-activity">Send loyalty email to 3+ time visitors offering a VIP league perk (discount or first pick of slots).</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 41</span>
+          <span class="day-date">Jan 03, 2025</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Post first league leaderboards, hold a raffle drawing and on-site celebration.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 42</span>
+          <span class="day-date">Jan 04, 2025</span>
+        </div>
+        <div class="day-phase">Phase 6: Loyalty &amp; League Launch</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Do our Axe your Anxiety campaign, targeted at reducing stress and understanding.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 43</span>
+          <span class="day-date">Jan 05, 2025</span>
+        </div>
+        <div class="day-phase">Phase 7: Final Countdown</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Drop Axe your Anxiety content.</div>
+        <div class="day-kpi"><strong>KPI:</strong> 200 countdown reel shares</div>
+      </div>
+      <div class="day-card type-event">
+        <div class="day-header">
+          <span class="day-number">Day 44</span>
+          <span class="day-date">Jan 06, 2025</span>
+        </div>
+        <div class="day-phase">Phase 7: Final Countdown</div>
+        <div class="day-type">Event Days</div>
+        <div class="day-activity">Share the results finalized of the national championship that day.</div>
+      </div>
+      <div class="day-card type-social">
+        <div class="day-header">
+          <span class="day-number">Day 45</span>
+          <span class="day-date">Jan 07, 2025</span>
+        </div>
+        <div class="day-phase">Phase 7: Final Countdown</div>
+        <div class="day-type">Social Media</div>
+        <div class="day-activity">Continue to do these on repeat after.</div>
+      </div>
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <h2>How to Read This Calendar</h2>
+        <p>
+          Each card represents one day in the retention campaign. Use the color bands to quickly
+          see the focus of the day, then skim the activity text for execution details.
+        </p>
+
+        <div class="sidebar-section">
+          <h3 style="font-size:0.9rem; margin:0 0 4px;">Activity Types</h3>
+          <ul class="sidebar-list">
+            <li>
+              <span class="sidebar-dot social"></span>
+              <div>
+                <div class="sidebar-label">Social Media</div>
+                <div class="sidebar-desc">Reels, feed posts, memes, and behind-the-scenes content that drive awareness and shares.</div>
+              </div>
+            </li>
+            <li>
+              <span class="sidebar-dot pr"></span>
+              <div>
+                <div class="sidebar-label">PR / Media / Outreach</div>
+                <div class="sidebar-desc">Flyers, local press, collaborations, and partnerships that expand reach beyond followers.</div>
+              </div>
+            </li>
+            <li>
+              <span class="sidebar-dot email"></span>
+              <div>
+                <div class="sidebar-label">Email Campaigns</div>
+                <div class="sidebar-desc">Follow-up flows, win-back messages, and promos to convert first-time visitors into regulars.</div>
+              </div>
+            </li>
+            <li>
+              <span class="sidebar-dot event"></span>
+              <div>
+                <div class="sidebar-label">Event Days</div>
+                <div class="sidebar-desc">In-venue experiences, tournaments, and themed nights that turn one-off visits into traditions.</div>
+              </div>
+            </li>
+            <li>
+              <span class="sidebar-dot major"></span>
+              <div>
+                <div class="sidebar-label">Major Events / Deadlines</div>
+                <div class="sidebar-desc">Key milestones such as league launch, finals, and major drops.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</body>
+</html>
